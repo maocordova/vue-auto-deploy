@@ -10,13 +10,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  create-deployment-artifacts:
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [12.x, 14.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -30,6 +30,32 @@ jobs:
     - run: npm run build --if-present
 
     - name: Create deployment artifact
-      run: tar -czf app.tar.gz dist
+      env:
+        GITHUB_SHA: ${{ github.sha }}
+      run: tar -czf "${GITHUB_SHA}".tar.gz dist
 
+    - name: Store artifact for distribution
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-build
+        path: ${{ github.sha }}.tar.gz
+
+  prepare-release-on-servers:
+      name: "Vue auto deploy: Prepare release"
+      runs-on: ubuntu-latest
+      needs: create-deployment-artifacts
+      steps:
+        - uses: actions/download-artifact@v2
+          with:
+            name: app-build
+
+        - name: Upload to server
+          uses: appleboy/scp-action@master
+          with:
+            host: ${{ secrets.SERVER_IP }}
+            username: ${{ secrets.SERVER_USERNAME }}
+            password: ${{ secrets.SERVER_PASSWORD }}
+            port: ${{ secrets.SERVER_PORT }}
+            source: ${{ github.sha }}.tar.gz
+            target: ${{ secrets.SERVER_PATH }}/artifacts
 
