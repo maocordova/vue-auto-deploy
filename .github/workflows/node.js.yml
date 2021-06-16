@@ -60,15 +60,15 @@ jobs:
             target: ${{ secrets.SERVER_PATH }}/artifacts
 
         - name: Extract files and create directories
-            uses: appleboy/ssh-action@master
-            env:
-              GITHUB_SHA: ${{ github.sha }}
-            with:
-              host: ${{ secrets.SERVER_IP }}
-              username: ${{ secrets.SERVER_USERNAME }}
-              password: ${{ secrets.SERVER_PASSWORD }}
-              port: ${{ secrets.SERVER_PORT }}
-              envs: GITHUB_SHA
-              script: |
-                # Extract the tar file into our release directory
-                tar xzf ${{ secrets.SERVER_PATH }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_PATH }}/"
+          uses: appleboy/ssh-action@master
+          env:
+            GITHUB_SHA: ${{ github.sha }}
+          with:
+            host: ${{ secrets.SERVER_IP }}
+            username: ${{ secrets.SERVER_USERNAME }}
+            password: ${{ secrets.SERVER_PASSWORD }}
+            port: ${{ secrets.SERVER_PORT }}
+            envs: GITHUB_SHA
+            script: |
+              # Extract the tar file into our release directory
+              tar xzf ${{ secrets.SERVER_PATH }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_PATH }}/"
