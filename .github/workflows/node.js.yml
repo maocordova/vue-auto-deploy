@@ -59,7 +59,6 @@ jobs:
             source: ${{ github.sha }}.tar.gz
             target: ${{ secrets.SERVER_PATH }}/artifacts
 
-
         - name: Extract files and create directories
             uses: appleboy/ssh-action@master
             env:
