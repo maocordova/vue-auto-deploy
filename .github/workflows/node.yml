@@ -67,6 +67,8 @@ jobs:
             envs: GITHUB_SHA
             script: |
               # Extract the tar file into our release directory
+              mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
+              # Extract the tar file into our release directory
               tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_DEPLOY_PATH }}"
 
   clean-up:
