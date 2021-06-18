@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
 
 env:
-    DEPLOY_PATH: ${{ env.SERVER_DEPLOY_PATH }}
+    DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
 
 jobs:
   create-deployment-artifact:
