@@ -18,8 +18,8 @@ jobs:
           echo "Let's go live!!!"
           echo ${{ secrets.SERVER_PROD_DEPLOY_PATH }} >> ${{ env.SERVER_DEPLOY_PATH }}
         fi              
-        echo ${{ env.SERVER_DEPLOY_PATH }}
-        
+        echo "${{ env.SERVER_DEPLOY_PATH }}"
+
     - uses: actions/checkout@v2
     - name: Configure Node 12 
       uses: actions/setup-node@v2
