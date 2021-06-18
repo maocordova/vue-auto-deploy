@@ -18,9 +18,19 @@ jobs:
         with:
           node-version: 12.x
 
-      - run: npm ci
+      - name: Create env file
+        run: | 
+          touch .env
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "VUE_APP_URL=${{ secrets.VUE_APP_URL_PROD }}" >> .env
+          else
+            echo "VUE_APP_URL=${{ secrets.VUE_APP_URL }}" >> .env
+          fi
+          cat .env
 
-      - run: npm run build --if-present
+      - run: npm install
+
+      - run: npm run build
 
       - name: Create artifact
         env:
@@ -63,7 +73,7 @@ jobs:
               echo "DEPLOY_PATH=${{ secrets.SERVER_PROD_DEPLOY_PATH }}" >> $GITHUB_ENV
             else
               echo "DEPLOY_PATH=${{ secrets.SERVER_DEPLOY_PATH }}" >> $GITHUB_ENV
-            fi      
+            fi
 
         - name: Extract files and create directories
           uses: appleboy/ssh-action@master
