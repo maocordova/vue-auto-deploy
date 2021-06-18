@@ -2,7 +2,10 @@ name: Deploy Vue App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+env:
+    SERVER_DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
 
 jobs:
   create-deployment-artifact:
@@ -10,6 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: |
+        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+          echo "Let's go live!!!"
+          echo ${{ secrets.SERVER_PROD_DEPLOY_PATH }} >> ${{ env.SERVER_DEPLOY_PATH }}
+        fi              
+        echo ${{ env.SERVER_DEPLOY_PATH }}
+        
     - uses: actions/checkout@v2
     - name: Configure Node 12 
       uses: actions/setup-node@v2
@@ -67,9 +77,9 @@ jobs:
             envs: GITHUB_SHA
             script: |
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ env.SERVER_DEPLOY_PATH }}"
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_DEPLOY_PATH }}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ env.SERVER_DEPLOY_PATH }}"
 
   clean-up:
     name: "Clean up temp folders"
