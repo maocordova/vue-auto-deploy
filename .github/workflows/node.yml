@@ -14,13 +14,14 @@ jobs:
 
     steps:
       - run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "Let's go live!!!"
-            echo "${{ secrets.SERVER_PROD_DEPLOY_PATH }}" >> "${{ env.SERVER_DEPLOY_PATH }}"
-          else
-            echo "Let's go test"
-          fi
+        if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+          echo "Let's go live!!!"
+          echo "${{ secrets.SERVER_PROD_DEPLOY_PATH }}" >> "${{ env.SERVER_DEPLOY_PATH }}"
           echo "${{ env.SERVER_DEPLOY_PATH }}"
+        else
+          echo "Let's go test"
+          echo "${{ env.SERVER_DEPLOY_PATH }}"
+        fi
     - uses: actions/checkout@v2
     - name: Configure Node 12 
       uses: actions/setup-node@v2
