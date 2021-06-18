@@ -21,7 +21,6 @@ jobs:
             echo "Let's go test"
           fi
           echo "${{ env.SERVER_DEPLOY_PATH }}"
-
     - uses: actions/checkout@v2
     - name: Configure Node 12 
       uses: actions/setup-node@v2
