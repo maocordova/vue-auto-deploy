@@ -17,7 +17,7 @@ jobs:
           echo "${AMBIENTE}"
 
       - name: check environment
-        run: 
+        run: | 
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
           else
