@@ -60,7 +60,7 @@ jobs:
       steps:
         - run: |
             if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo ${{ env.SERVER_PROD_DEPLOY_PATH }} >> $env.SERVER_DEPLOY_PATH
+              echo "${{ env.SERVER_PROD_DEPLOY_PATH }}" >> $env.SERVER_DEPLOY_PATH
             fi      
         - name: Extract files and create directories
           uses: appleboy/ssh-action@master
