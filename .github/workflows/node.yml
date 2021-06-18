@@ -2,7 +2,10 @@ name: Deploy Vue App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+env:
+    SERVER_DEPLOY_PATH: "${{ secrets.SERVER_DEPLOY_PATH }}"
 
 jobs:
   create-deployment-artifact:
@@ -10,26 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Configure Node 12 
-      uses: actions/setup-node@v2
-      with:
-        node-version: 12.x
+      - run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "Let's go live!!!"
+            echo "${{ secrets.SERVER_PROD_DEPLOY_PATH }}" >> "${{ env.SERVER_DEPLOY_PATH }}"
+          else
+            echo "Let's go test"
+          fi
+          echo ${{ env.SERVER_DEPLOY_PATH }}
+      - uses: actions/checkout@v2
+      - name: Configure Node 12 
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12.x
 
-    - run: npm ci
+      - run: npm ci
 
-    - run: npm run build --if-present
+      - run: npm run build --if-present
 
-    - name: Create artifact
-      env:
-        GITHUB_SHA: ${{ github.sha }}
-      run: tar -czf "${GITHUB_SHA}".tar.gz dist
+      - name: Create artifact
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: tar -czf "${GITHUB_SHA}".tar.gz dist
 
-    - name: Store artifact for distribution
-      uses: actions/upload-artifact@v2
-      with:
-        name: app-build
-        path: ${{ github.sha }}.tar.gz
+      - name: Store artifact for distribution
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-build
+          path: ${{ github.sha }}.tar.gz
 
   upload-release-to-server:
       name: "Compress and upload release"
@@ -67,9 +78,9 @@ jobs:
             envs: GITHUB_SHA
             script: |
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ env.SERVER_DEPLOY_PATH }}"
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_DEPLOY_PATH }}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ env.SERVER_DEPLOY_PATH }}"
 
   clean-up:
     name: "Clean up temp folders"
