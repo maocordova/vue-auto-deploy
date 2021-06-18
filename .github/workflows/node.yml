@@ -5,90 +5,95 @@ on:
     branches: [ main, develop ]
 
 env:
-    SERVER_DEPLOY_PATH: "${{ secrets.SERVER_DEPLOY_PATH }}"
+    ambiente: "aqui va el ambiente"
 
 jobs:
   create-deployment-artifact:
     name: "Create deployment artifact"
     runs-on: ubuntu-latest
-
+    env:
+      SERVER_DEPLOY_PATH: $env.SERVER_DEPLOY_PATH
     steps:
-      - uses: actions/checkout@v2
-      - name: Configure Node 12 
-        uses: actions/setup-node@v2
-        with:
-          node-version: 12.x
+      - run: |
+          echo $env.ambiente
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "produccion!!!" >> $env.ambiente
+          else
+            echo "test!!!" >> $env.ambiente
+          fi
+          echo $env.ambiente
+  #     - uses: actions/checkout@v2
+  #     - name: Configure Node 12 
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: 12.x
 
-      - run: npm ci
+  #     - run: npm ci
 
-      - run: npm run build --if-present
+  #     - run: npm run build --if-present
 
-      - name: Create artifact
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-        run: tar -czf "${GITHUB_SHA}".tar.gz dist
+  #     - name: Create artifact
+  #       env:
+  #         GITHUB_SHA: ${{ github.sha }}
+  #       run: tar -czf "${GITHUB_SHA}".tar.gz dist
 
-      - name: Store artifact for distribution
-        uses: actions/upload-artifact@v2
-        with:
-          name: app-build
-          path: ${{ github.sha }}.tar.gz
+  #     - name: Store artifact for distribution
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: app-build
+  #         path: ${{ github.sha }}.tar.gz
 
-  upload-release-to-server:
-      name: "Compress and upload release"
-      runs-on: ubuntu-latest
-      needs: create-deployment-artifact
-      steps:
-        - uses: actions/download-artifact@v2
-          with:
-            name: app-build
+  # upload-release-to-server:
+  #     name: "Compress and upload release"
+  #     runs-on: ubuntu-latest
+  #     needs: create-deployment-artifact
+  #     steps:
+  #       - uses: actions/download-artifact@v2
+  #         with:
+  #           name: app-build
 
-        - name: Upload to server
-          uses: appleboy/scp-action@master
-          with:
-            host: ${{ secrets.SERVER_IP }}
-            username: ${{ secrets.SERVER_USERNAME }}
-            password: ${{ secrets.SERVER_PASSWORD }}
-            port: ${{ secrets.SERVER_PORT }}
-            source: ${{ github.sha }}.tar.gz
-            target: /tmp/artifacts
+  #       - name: Upload to server
+  #         uses: appleboy/scp-action@master
+  #         with:
+  #           host: ${{ secrets.SERVER_IP }}
+  #           username: ${{ secrets.SERVER_USERNAME }}
+  #           password: ${{ secrets.SERVER_PASSWORD }}
+  #           port: ${{ secrets.SERVER_PORT }}
+  #           source: ${{ github.sha }}.tar.gz
+  #           target: /tmp/artifacts
 
-  deploy-release-on-server:
-      name: "Deploy release"
-      runs-on: ubuntu-latest
-      needs: upload-release-to-server
-      steps:
-        - run: |
-            if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "${{ env.SERVER_PROD_DEPLOY_PATH }}" >> $env.SERVER_DEPLOY_PATH
-            fi      
-        - name: Extract files and create directories
-          uses: appleboy/ssh-action@master
-          env:
-            GITHUB_SHA: ${{ github.sha }}
-          with:
-            host: ${{ secrets.SERVER_IP }}
-            username: ${{ secrets.SERVER_USERNAME }}
-            password: ${{ secrets.SERVER_PASSWORD }}
-            port: ${{ secrets.SERVER_PORT }}
-            envs: GITHUB_SHA,SERVER_DEPLOY_PATH
-            script: |
-              # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${SERVER_DEPLOY_PATH}"
-              # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ env.SERVER_DEPLOY_PATH }}"
+  # deploy-release-on-server:
+  #     name: "Deploy release"
+  #     runs-on: ubuntu-latest
+  #     needs: upload-release-to-server
+  #     steps:
+  #       - name: Extract files and create directories
+  #         uses: appleboy/ssh-action@master
+  #         env:
+  #           GITHUB_SHA: ${{ github.sha }}
+  #         with:
+  #           host: ${{ secrets.SERVER_IP }}
+  #           username: ${{ secrets.SERVER_USERNAME }}
+  #           password: ${{ secrets.SERVER_PASSWORD }}
+  #           port: ${{ secrets.SERVER_PORT }}
+  #           envs: GITHUB_SHA
+  #           script: |
+  #             # Extract the tar file into our release directory
+  #             echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ env.SERVER_DEPLOY_PATH }}"
+  #             # Extract the tar file into our release directory
+  #             echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ env.SERVER_DEPLOY_PATH }}"
 
-  clean-up:
-    name: "Clean up temp folders"
-    runs-on: ubuntu-latest
-    needs: [ create-deployment-artifact, upload-release-to-server, deploy-release-on-server ]
-    steps:
-    - name: Cleaning up
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        port: ${{ secrets.SERVER_PORT }}
-        script: |
-          rm -rf /tmp/artifacts
+  # clean-up:
+  #   name: "Clean up temp folders"
+  #   runs-on: ubuntu-latest
+  #   needs: [ create-deployment-artifact, upload-release-to-server, deploy-release-on-server ]
+  #   steps:
+  #   - name: Cleaning up
+  #     uses: appleboy/ssh-action@master
+  #     with:
+  #       host: ${{ secrets.SERVER_IP }}
+  #       username: ${{ secrets.SERVER_USERNAME }}
+  #       password: ${{ secrets.SERVER_PASSWORD }}
+  #       port: ${{ secrets.SERVER_PORT }}
+  #       script: |
+  #         rm -rf /tmp/artifacts
