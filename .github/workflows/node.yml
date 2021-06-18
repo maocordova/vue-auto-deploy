@@ -18,10 +18,10 @@ jobs:
           echo "${env.AMBIENTE}"
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
-            echo "produccion!!!" >> "${env.AMBIENTE}"
+            echo "produccion!!!" > "${env.AMBIENTE}"
           else
             echo "voy a test"
-            echo "test!!!" >> "${env.AMBIENTE}"
+            echo "test!!!" > "${env.AMBIENTE}"
           fi
           echo "${env.AMBIENTE}"
   #     - uses: actions/checkout@v2
