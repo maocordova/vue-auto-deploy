@@ -4,28 +4,27 @@ on:
   push:
     branches: [ main, develop ]
 
+env:
+    DEPLOY_PATH: ${{ secrets.SERVER_DEPLOY_PATH }}
+
 jobs:
   create-deployment-artifact:
     name: "Create deployment artifact"
     runs-on: ubuntu-latest
     steps:
-      - name: discplay inicial environment
+      - name: display iniTial environment
         run: 
-          echo $AMBIENTE
+          echo $DEPLOY_PATH
 
       - name: check environment
         run: | 
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "voy a produccion"
-            echo "AMBIENTE=${{ secrets.SERVER_DEPLOY_PATH }}" >> $GITHUB_ENV
-          else
-            echo "voy a test"
-            echo "AMBIENTE=${{ secrets.SERVER_DEPLOY_PATH }}" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=${{ secrets.SERVER_PROD_DEPLOY_PATH }}" >> $GITHUB_ENV
           fi
 
       - name: show variable
         run:
-          echo $AMBIENTE
+          echo $DEPLOY_PATH
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
