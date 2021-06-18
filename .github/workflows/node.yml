@@ -13,11 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo ${{ env.SERVER_PROD_DEPLOY_PATH }} >> $env.SERVER_DEPLOY_PATH
-          fi
-          echo ${{ env.SERVER_DEPLOY_PATH }}
       - uses: actions/checkout@v2
       - name: Configure Node 12 
         uses: actions/setup-node@v2
@@ -63,6 +58,10 @@ jobs:
       runs-on: ubuntu-latest
       needs: upload-release-to-server
       steps:
+      - run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo ${{ env.SERVER_PROD_DEPLOY_PATH }} >> $env.SERVER_DEPLOY_PATH
+          fi      
         - name: Extract files and create directories
           uses: appleboy/ssh-action@master
           env:
