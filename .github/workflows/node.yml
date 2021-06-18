@@ -15,7 +15,7 @@ jobs:
     steps:
       - run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo ${{ secrets.SERVER_PROD_DEPLOY_PATH }} >> "${{ env.SERVER_DEPLOY_PATH }}"
+            echo "/var/www/html/application_prod" >> "${{ env.SERVER_DEPLOY_PATH }}"
           else
             echo "Let's go test"
           fi
