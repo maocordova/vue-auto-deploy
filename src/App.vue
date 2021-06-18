@@ -4,10 +4,19 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div>
+    <h2>Deploy to {{ environment }}</h2>
     <router-view/>
   </div>
 </template>
-
+<script>
+export default {
+  data() {
+    return {
+      environment: process.env.VUE_APP_ENV
+    }
+  }
+}
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
