@@ -22,9 +22,9 @@ jobs:
         run: | 
           touch .env
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "VUE_APP_URL=${{ secrets.VUE_APP_URL_PROD }}" >> .env
+            printf "%s" ${{ secrets.PRODUCTION_ENV }} > .env
           else
-            echo "VUE_APP_URL=${{ secrets.VUE_APP_URL }}" >> .env
+            printf "%s" ${{ secrets.TEST_ENV }} > .env
           fi
           cat .env
 
