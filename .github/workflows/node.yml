@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
 
 env:
-    ambiente: "aqui va el ambiente"
+    AMBIENTE: "aqui va el ambiente"
 
 jobs:
   create-deployment-artifact:
@@ -15,15 +15,15 @@ jobs:
       SERVER_DEPLOY_PATH: $env.SERVER_DEPLOY_PATH
     steps:
       - run: |
-          echo ${env.ambiente}
+          echo "${env.AMBIENTE}"
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
-            echo "produccion!!!" >> ${env.ambiente}
+            echo "produccion!!!" >> "${env.AMBIENTE}"
           else
             echo "voy a test"
-            echo "test!!!" >> ${env.ambiente}
+            echo "test!!!" >> "${env.AMBIENTE}"
           fi
-          echo ${env.ambiente}
+          echo "${env.AMBIENTE}"
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
