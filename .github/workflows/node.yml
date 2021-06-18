@@ -26,7 +26,6 @@ jobs:
           else
             printf "%s" "${{ secrets.TEST_ENV }}" > ".env"
           fi
-          cat .env
 
       - run: npm install
 
