@@ -15,11 +15,13 @@ jobs:
       SERVER_DEPLOY_PATH: $env.SERVER_DEPLOY_PATH
     steps:
       - run: |
-          echo $env.ambiente
+          echo ${env.ambiente}
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "produccion!!!" >> $env.ambiente
+            echo "voy a produccion"
+            echo "produccion!!!" >> ${env.ambiente}
           else
-            echo "test!!!" >> $env.ambiente
+            echo "voy a test"
+            echo "test!!!" >> ${env.ambiente}
           fi
           echo ${env.ambiente}
   #     - uses: actions/checkout@v2
