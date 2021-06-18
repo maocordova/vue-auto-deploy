@@ -4,10 +4,6 @@ on:
   push:
     branches: [ main, develop ]
 
-env:
-    SERVER_IP: ${{ secrets.SERVER_DEPLOY_PATH }}
-    SERVER_PASSWORD: ${{ secrets.SERVER_DEPLOY_PATH }}
-
 jobs:
   create-deployment-artifact:
     name: "Create deployment artifact"
