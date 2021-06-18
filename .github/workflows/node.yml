@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          echo "${env.AMBIENTE}"
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
           else
             echo "voy a test"
           fi
-          echo "${env.AMBIENTE}"
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
