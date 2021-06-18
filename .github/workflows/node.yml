@@ -58,10 +58,10 @@ jobs:
       runs-on: ubuntu-latest
       needs: upload-release-to-server
       steps:
-      - run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo ${{ env.SERVER_PROD_DEPLOY_PATH }} >> $env.SERVER_DEPLOY_PATH
-          fi      
+        - run: |
+            if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo ${{ env.SERVER_PROD_DEPLOY_PATH }} >> $env.SERVER_DEPLOY_PATH
+            fi      
         - name: Extract files and create directories
           uses: appleboy/ssh-action@master
           env:
