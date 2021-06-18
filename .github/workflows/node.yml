@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main, develop ]
 
+env:
+    SERVER_IP: ${{ secrets.SERVER_IP }}
+    SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+
 jobs:
   create-deployment-artifact:
     name: "Create deployment artifact"
@@ -40,63 +44,63 @@ jobs:
           path: ${{ github.sha }}.tar.gz
 
   upload-release-to-server:
-      name: "Compress and upload release"
-      runs-on: ubuntu-latest
-      needs: create-deployment-artifact
-      steps:
-        - name: Check Environment
-          run: | 
-            if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "SERVER_IP=${{ secrets.SERVER_PROD_IP }}" >> $GITHUB_ENV
-              echo "SERVER_PASSWORD=${{ secrets.SERVER_PROD_PASSWORD }}" >> $GITHUB_ENV
-            else
-              echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> $GITHUB_ENV
-              echo "SERVER_PASSWORD=${{ secrets.SERVER_PASSWORD }}" >> $GITHUB_ENV
-            fi
-        - uses: actions/download-artifact@v2
-          with:
-            name: app-build
+    name: "Compress and upload release"
+    runs-on: ubuntu-latest
+    needs: create-deployment-artifact
+    steps:
+      - name: Check Environment
+        run: | 
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "Deploying to production"
+            echo "SERVER_IP=${{ secrets.SERVER_PROD_IP }}" >> $GITHUB_ENV
+            echo "SERVER_PASSWORD=${{ secrets.SERVER_PROD_PASSWORD }}" >> $GITHUB_ENV
+          else
+            echo "Deploying to test"
+          fi
+      - uses: actions/download-artifact@v2
+        with:
+          name: app-build
 
-        - name: Upload to server
-          uses: appleboy/scp-action@master
-          with:
-            host: ${{ env.SERVER_IP }}
-            username: ${{ secrets.SERVER_USERNAME }}
-            password: ${{ env.SERVER_PASSWORD }}
-            port: ${{ secrets.SERVER_PORT }}
-            source: ${{ github.sha }}.tar.gz
-            target: /tmp/artifacts
+      - name: Upload to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ env.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: ${{ github.sha }}.tar.gz
+          target: /tmp/artifacts
 
   deploy-release-on-server:
-      name: "Deploy release"
-      runs-on: ubuntu-latest
-      needs: upload-release-to-server
-      steps:
-        - name: Check Environment
-          run: | 
-            if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "SERVER_IP=${{ secrets.SERVER_PROD_IP }}" >> $GITHUB_ENV
-              echo "SERVER_PASSWORD=${{ secrets.SERVER_PROD_PASSWORD }}" >> $GITHUB_ENV
-            else
-              echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> $GITHUB_ENV
-              echo "SERVER_PASSWORD=${{ secrets.SERVER_PASSWORD }}" >> $GITHUB_ENV
-            fi
+    name: "Deploy release"
+    runs-on: ubuntu-latest
+    needs: upload-release-to-server
+    steps:
+      - name: Check Environment
+        run: | 
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "Deploying to production"
+            echo "SERVER_IP=${{ secrets.SERVER_PROD_IP }}" >> $GITHUB_ENV
+            echo "SERVER_PASSWORD=${{ secrets.SERVER_PROD_PASSWORD }}" >> $GITHUB_ENV
+          else
+            echo "Deploying to test"              
+          fi
 
-        - name: Extract files and create directories
-          uses: appleboy/ssh-action@master
-          env:
-            GITHUB_SHA: ${{ github.sha }}
-          with:
-            host: ${{ env.SERVER_IP }}
-            username: ${{ secrets.SERVER_USERNAME }}
-            password: ${{ env.SERVER_PASSWORD }}
-            port: ${{ secrets.SERVER_PORT }}
-            envs: GITHUB_SHA
-            script: |
-              # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
-              # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_DEPLOY_PATH }}"
+      - name: Extract files and create directories
+        uses: appleboy/ssh-action@master
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ env.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          envs: GITHUB_SHA
+          script: |
+            # Extract the tar file into our release directory
+            echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${{ secrets.SERVER_DEPLOY_PATH }}"
+            # Extract the tar file into our release directory
+            echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${{ secrets.SERVER_DEPLOY_PATH }}"
 
   clean-up:
     name: "Clean up temp folders"
@@ -106,11 +110,11 @@ jobs:
       - name: Check Environment
         run: | 
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "Deploying to production"
             echo "SERVER_IP=${{ secrets.SERVER_PROD_IP }}" >> $GITHUB_ENV
             echo "SERVER_PASSWORD=${{ secrets.SERVER_PROD_PASSWORD }}" >> $GITHUB_ENV
           else
-            echo "SERVER_IP=${{ secrets.SERVER_IP }}" >> $GITHUB_ENV
-            echo "SERVER_PASSWORD=${{ secrets.SERVER_PASSWORD }}" >> $GITHUB_ENV
+            echo "Deploying to test"            
           fi    
       - name: Cleaning up
         uses: appleboy/ssh-action@master
