@@ -57,6 +57,16 @@ jobs:
       runs-on: ubuntu-latest
       needs: create-deployment-artifact
       steps:
+        - name: check environment
+          run: | 
+            if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo "voy a produccion"
+              echo "AMBIENTE=server prod path" >> $GITHUB_ENV
+            else
+              echo "voy a test"
+              echo "AMBIENTE=server test path" >> $GITHUB_ENV
+            fi      
+            
         - name: Check amviente
           run: echo $AMBIENTE
 
