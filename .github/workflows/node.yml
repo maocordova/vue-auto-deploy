@@ -21,7 +21,7 @@ jobs:
           else
             echo "test!!!" >> $env.ambiente
           fi
-          echo $env.ambiente
+          echo ${env.ambiente}
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
