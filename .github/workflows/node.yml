@@ -11,17 +11,13 @@ jobs:
   create-deployment-artifact:
     name: "Create deployment artifact"
     runs-on: ubuntu-latest
-    env:
-      SERVER_DEPLOY_PATH: $env.SERVER_DEPLOY_PATH
     steps:
       - run: |
           echo "${env.AMBIENTE}"
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
-            echo "produccion!!!" >> $env.AMBIENTE
           else
             echo "voy a test"
-            echo "test!!!" >> $env.AMBIENTE
           fi
           echo "${env.AMBIENTE}"
   #     - uses: actions/checkout@v2
