@@ -18,7 +18,7 @@ jobs:
           else
             echo "voy a test"
           fi
-          echo "${env.AMBIENTE}"
+          echo ${env.AMBIENTE}
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
