@@ -69,17 +69,18 @@ jobs:
           uses: appleboy/ssh-action@master
           env:
             GITHUB_SHA: ${{ github.sha }}
+            DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
           with:
             host: ${{ secrets.SERVER_IP }}
             username: ${{ secrets.SERVER_USERNAME }}
             password: ${{ secrets.SERVER_PASSWORD }}
             port: ${{ secrets.SERVER_PORT }}
-            envs: GITHUB_SHA
+            envs: GITHUB_SHA,DEPLOY_PATH
             script: |
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${env.DEPLOY_PATH}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${DEPLOY_PATH}"
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${env.DEPLOY_PATH}"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${DEPLOY_PATH}"
 
   clean-up:
     name: "Clean up temp folders"
