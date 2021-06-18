@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${env.AMBIENTE}"
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
           else
