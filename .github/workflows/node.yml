@@ -12,13 +12,21 @@ jobs:
     name: "Create deployment artifact"
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: discplay inicial environment
+        run: 
+          echo "${AMBIENTE}"
+
+      - name: check environment
+        run: 
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
           else
             echo "voy a test"
           fi
-          echo ${env.AMBIENTE}
+
+      - name: show variable
+        run:
+          echo ${AMBIENTE}
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
