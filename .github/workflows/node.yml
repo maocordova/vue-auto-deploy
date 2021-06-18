@@ -77,9 +77,9 @@ jobs:
             envs: GITHUB_SHA
             script: |
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "$DEPLOY_PATH"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S mkdir -p "${env.DEPLOY_PATH}"
               # Extract the tar file into our release directory
-              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "$DEPLOY_PATH"
+              echo ${{ secrets.SERVER_PASSWORD }} | sudo -S tar xzf /tmp/artifacts/${GITHUB_SHA}.tar.gz -C "${env.DEPLOY_PATH}"
 
   clean-up:
     name: "Clean up temp folders"
