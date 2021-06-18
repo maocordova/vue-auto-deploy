@@ -14,21 +14,21 @@ jobs:
     steps:
       - name: discplay inicial environment
         run: 
-          echo "${AMBIENTE}"
+          echo $AMBIENTE
 
       - name: check environment
         run: | 
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
             echo "voy a produccion"
-            echo "server prod path" >> "${{env.AMBIENTE}}"
+            echo "server prod path" >> $AMBIENTE
           else
             echo "voy a test"
-            echo "server test path" >> "${{env.AMBIENTE}}"
+            echo "server test path" >> $AMBIENTE
           fi
 
       - name: show variable
         run:
-          echo ${AMBIENTE}
+          echo $AMBIENTE
   #     - uses: actions/checkout@v2
   #     - name: Configure Node 12 
   #       uses: actions/setup-node@v2
