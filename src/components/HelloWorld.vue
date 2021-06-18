@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h3>Loaded from {{ this.url }} </h3>
+    <h3>Loaded from {{ url }} </h3>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -38,8 +38,10 @@ export default {
   props: {
     msg: String
   },
-  data: {
-    url: process.env.VUE_APP_URL
+  data() {
+    return {
+      url: process.env.VUE_APP_URL
+    }    
   }
 }
 </script>
